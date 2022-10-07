@@ -34,9 +34,19 @@ jobs:
           target_branch: 'dev-to-staging'
 
       - name: Create pull request
+        id: pr
         uses: thomaseizinger/create-pull-request@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           head: dev-to-staging
           base: staging
           title: "Dev to staging"
+          labels: "deploy"
+
+      - name: PR Timeline Commitizen Commits List
+        uses: EverStarck/pr-timeline-commitizen-commits-list@v1.0
+        with:
+          github-token: ${{ github.token }}
+          owner: "MarcPuigdemont"
+          repo: "testgithubactions"
+          pull_number: "${{ steps.ps.outputs.number }}"
