@@ -1,0 +1,29 @@
+name: Create production promotion pull request
+workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Sprint name'
+        # Input has to be provided for the workflow to run
+        required: true
+jobs:
+  productionPromotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: staging
+
+      - uses: peterjgrainger/action-create-branch@v2.2.0
+          with:
+            branch: 'dev-to-staging'
+  
+      - name: Merge origin/dev
+        run: |
+          git merge origin/dev
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: staging
