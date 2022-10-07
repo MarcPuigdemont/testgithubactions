@@ -27,14 +27,16 @@ jobs:
         with:
           branch: 'dev-to-staging'
   
-      # - uses: everlytic/branch-merge@1.1.2
-      #   with:
-      #     github_token: ${{ github.token }}
-      #     source_ref: 'dev'
-      #     target_branch: 'dev-to-staging'
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+      - uses: everlytic/branch-merge@1.1.2
         with:
+          github_token: ${{ github.token }}
+          source_ref: 'dev'
+          target_branch: 'dev-to-staging'
+
+      - name: Create pull request
+        uses: thomaseizinger/create-pull-request@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          head: dev-to-staging
           base: staging
-          branch: dev-to-staging
+          title: "Dev to staging"
