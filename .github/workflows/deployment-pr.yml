@@ -1,5 +1,4 @@
-name: Create production promotion pull request
-
+name: Create deployment pull request
 on:
   workflow_dispatch:
       # Inputs the workflow accepts.
@@ -9,7 +8,6 @@ on:
           description: 'Sprint name'
           # Input has to be provided for the workflow to run
           required: true
-
 jobs:
   productionPromotion:
     runs-on: ubuntu-latest
