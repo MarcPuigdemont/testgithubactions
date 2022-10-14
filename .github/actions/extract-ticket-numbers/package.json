@@ -1,0 +1,31 @@
+{
+  "name": "extract-issue-numbers",
+  "version": "0.0.1",
+  "description": "Extract issue numbers from commit list",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwanwooi25/extract-issue-numbers.git"
+  },
+  "keywords": [
+    "jira",
+    "release"
+  ],
+  "author": "steven.jeong<kwanwoo.jeong@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kwanwooi25/extract-issue-numbers/issues"
+  },
+  "homepage": "https://github.com/kwanwooi25/extract-issue-numbers#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^5.0.3"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.34.0",
+    "typescript": "^4.7.4"
+  }
+}

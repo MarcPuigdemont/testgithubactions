@@ -43,10 +43,7 @@ jobs:
           title: "Dev to staging"
           labels: "deploy"
 
-      - name: PR Timeline Commitizen Commits List
-        uses: EverStarck/pr-timeline-commitizen-commits-list@v1.0
+      - name: Extract ticket numbers
+        uses: ./.github/actions/extract-ticket-number
         with:
           github-token: ${{ github.token }}
-          owner: "MarcPuigdemont"
-          repo: "testgithubactions"
-          pull_number: "${{ steps.pr.outputs.number }}"
