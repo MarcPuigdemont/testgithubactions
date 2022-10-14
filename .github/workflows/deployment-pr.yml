@@ -44,6 +44,6 @@ jobs:
           labels: "deploy"
 
       - name: Extract ticket numbers
-        uses: ./.github/actions/extract-ticket-number
+        uses: ./.github/actions/extract-ticket-numbers
         with:
           github-token: ${{ github.token }}
