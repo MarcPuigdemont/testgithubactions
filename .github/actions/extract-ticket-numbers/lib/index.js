@@ -8862,7 +8862,16 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
                 shouldFetchMore = false;
             }
         }
-        (0, core_1.setOutput)('issueNumbers', [...new Set(issueNumbers)].join(','));
+        const result = [...new Set(issueNumbers)].join(',');
+        (0, core_1.setOutput)('issueNumbers', result);
+        if (true /*update_body*/) {
+            octokit.rest.pulls.update({
+                owner: payload.owner,
+                repo: payload.repo,
+                pull_number: payload.pull_number,
+                body: result,
+            });
+        }
     }
     catch (error) {
         console.log(error);

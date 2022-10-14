@@ -1,4 +1,4 @@
-import { core, getInput, setFailed, setOutput } from '@actions/core';
+import { getInput, setFailed, setOutput } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 
 const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
@@ -36,8 +36,6 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
         body: result,
       });
     }
-
-    core.setOutput("pull-request-body", result);
   } catch (error: any) {
     console.log(error);
     setFailed(error?.errorMessages);
