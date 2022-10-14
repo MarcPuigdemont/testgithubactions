@@ -42,6 +42,11 @@ jobs:
           base: staging
           title: "Dev to staging"
           labels: "deploy"
+      
+      - name: Go back to dev to run custom action which is on dev and not on staging
+        uses: actions/checkout@v3
+        with:
+          ref: dev
 
       - name: Extract ticket numbers
         uses: ./.github/actions/extract-ticket-number
