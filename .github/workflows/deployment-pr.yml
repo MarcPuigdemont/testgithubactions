@@ -46,4 +46,4 @@ jobs:
       - name: Extract ticket numbers
         uses: ./.github/actions/extract-ticket-numbers
         with:
-          github-token: ${{ github.token }}
+          github_token: ${{ github.token }}

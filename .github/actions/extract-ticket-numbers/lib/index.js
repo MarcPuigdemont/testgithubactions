@@ -8843,7 +8843,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
 (() => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const githubToken = (0, core_1.getInput)('githubToken', { required: true });
+        const githubToken = (0, core_1.getInput)('github_token', { required: true });
         const octokit = (0, github_1.getOctokit)(githubToken);
         const payload = {
             owner: github_1.context.repo.owner,
