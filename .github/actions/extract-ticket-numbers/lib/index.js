@@ -8841,14 +8841,15 @@ const core_1 = __nccwpck_require__(6953);
 const github_1 = __nccwpck_require__(1340);
 const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     try {
         const githubToken = (0, core_1.getInput)('github_token', { required: true });
+        const pr = (0, core_1.getInput)('pull_request', { required: true });
         const octokit = (0, github_1.getOctokit)(githubToken);
         const payload = {
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
-            pull_number: Number((_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number),
+            pull_number: Number(pr),
         };
         let shouldFetchMore = true;
         let issueNumbers = [];
@@ -8858,7 +8859,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
                 .map(({ commit }) => { var _a; return (_a = ISSUE_NUMBER_REGEX.exec(commit.message)) === null || _a === void 0 ? void 0 : _a[0]; })
                 .filter(Boolean);
             issueNumbers = [...issueNumbers, ...filtered];
-            if (((_b = res.data) === null || _b === void 0 ? void 0 : _b.length) !== 100) {
+            if (((_a = res.data) === null || _a === void 0 ? void 0 : _a.length) !== 100) {
                 shouldFetchMore = false;
             }
         }

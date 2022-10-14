@@ -6,11 +6,12 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
 (async () => {
   try {
     const githubToken = getInput('github_token', { required: true });
+    const pr = getInput('pull_request', { required: true });
     const octokit = getOctokit(githubToken);
     const payload = {
       owner: context.repo.owner,
       repo: context.repo.repo,
-      pull_number: Number(context.payload.pull_request?.number),
+      pull_number: Number(pr),
     };
 
     let shouldFetchMore = true;

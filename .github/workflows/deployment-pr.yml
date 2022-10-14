@@ -47,3 +47,4 @@ jobs:
         uses: ./.github/actions/extract-ticket-numbers
         with:
           github_token: ${{ github.token }}
+          pull_request: "${{ steps.pr.outputs.number }}"

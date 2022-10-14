@@ -5,8 +5,11 @@ author: steven.jeong
 description: Extract issue numbers from commit list
 
 inputs:
-  githubToken:
+  github_token:
     description: Github Token that has access to `repo`
+    required: true
+  pull_request:
+    description: Number of the pull request
     required: true
 
 runs:
