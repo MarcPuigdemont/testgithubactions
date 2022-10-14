@@ -43,6 +43,7 @@ jobs:
           title: "Dev to staging"
           labels: "deploy"
 
+      - uses: actions/checkout@v3
       - name: Extract ticket numbers
         uses: ./.github/actions/extract-ticket-number
         with:
