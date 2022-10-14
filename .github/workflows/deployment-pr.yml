@@ -16,6 +16,11 @@ jobs:
         with:
           ref: dev
 
+      - name: ls
+        run: |
+          ls -R .
+        continue-on-error: true
+
       - name: Delete existing branch
         run: |
           git push origin --delete dev-to-staging
