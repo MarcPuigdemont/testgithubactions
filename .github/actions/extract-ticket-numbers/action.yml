@@ -11,6 +11,9 @@ inputs:
   pull_request:
     description: Number of the pull request
     required: true
+  asana_token:
+    description: Token to request Asana API
+    required: true
 
 runs:
   using: 'node16'
