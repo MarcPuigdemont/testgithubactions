@@ -47,10 +47,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
       return `- [${name}](${permalink_url})`;
     })
 
-    console.log(ticketDescriptions)
-
     const result = ticketDescriptions.join('\n');
-    console.log(result);
     setOutput('issueNumbers', result);
 
     octokit.rest.pulls.update({
