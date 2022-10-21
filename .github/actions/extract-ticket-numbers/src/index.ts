@@ -30,7 +30,6 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
     }
 
     const uniqueIssueNumbers = [...new Set(issueNumbers.map((issueNumber) => issueNumber.slice(1, -1)))];
-    let body = '';
     
     const tickets = await Promise.all(uniqueIssueNumbers.map((issueNumber) => {
       return axios.get(`https://app.asana.com/api/1.0/workspaces/1196563353487540/tasks/search?text=${issueNumber}&opt_fields=name,permalink_url`, {
@@ -48,7 +47,10 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
       return `- [${name}](${permalink_url})`;
     })
 
+    console.log(ticketDescriptions)
+
     const result = ticketDescriptions.join('\n');
+    console.log(result);
     setOutput('issueNumbers', result);
 
     octokit.rest.pulls.update({
