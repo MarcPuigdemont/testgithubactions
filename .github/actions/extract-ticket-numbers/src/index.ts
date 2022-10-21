@@ -1,5 +1,6 @@
 import { getInput, setFailed, setOutput } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
+import axios from 'axios';
 
 const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
 
@@ -7,6 +8,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
   try {
     const githubToken = getInput('github_token', { required: true });
     const pr = getInput('pull_request', { required: true });
+    const asanaToken = getInput('asana_token', { required: true });
     const octokit = getOctokit(githubToken);
     const payload = {
       owner: context.repo.owner,
@@ -26,17 +28,36 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
         shouldFetchMore = false;
       }
     }
-    const result = [...new Set(issueNumbers)].join(',')
+
+    const uniqueIssueNumbers = [...new Set(issueNumbers.map((issueNumber) => issueNumber.slice(1, -1)))];
+    let body = '';
+    
+    const tickets = await Promise.all(uniqueIssueNumbers.map((issueNumber) => {
+      return axios.get(`https://app.asana.com/api/1.0/workspaces/1196563353487540/tasks/search?text=${issueNumber}&opt_fields=name,permalink_url`, {
+        headers: {
+          Authorization: `Bearer ${asanaToken}`,
+        }
+      })
+    }));
+
+    const ticketDescriptions = tickets.map(({ data, request }) => {
+      if (data.data.length === 0) {
+        return '- Failed to fetch ticket with this path ' + request.path;
+      }
+      const { name, permalink_url } = data.data[0];
+      return `- [${name}](${permalink_url})`;
+    })
+
+    const result = ticketDescriptions.join('\n');
     setOutput('issueNumbers', result);
 
-    if (true /*update_body*/) {
-      octokit.rest.pulls.update({
-        owner: payload.owner,
-        repo: payload.repo,
-        pull_number: payload.pull_number,
-        body: result,
-      });
-    }
+    octokit.rest.pulls.update({
+      owner: payload.owner,
+      repo: payload.repo,
+      pull_number: payload.pull_number,
+      body: result,
+    });
+    
   } catch (error: any) {
     console.log(error);
     setFailed(error?.errorMessages);
