@@ -22,7 +22,8 @@ jobs:
       - name: Create PR Name
         id: create_pr_name
         run: |
-          echo "PR_NAME=${${{ inputs.name }}^}" >> $GITHUB_OUTPUT
+          pr_name=${{ inputs.name }}
+          echo "PR_NAME=${pr_name^}" >> $GITHUB_OUTPUT
 
       - name: Delete existing branch
         run: |
@@ -48,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           head: dev-to-staging-${{ inputs.name }}
           base: staging
-          title: "Dev to staging ${{ steps.create_pr_name.outputs.PR_NAME }} 2"
+          title: "Dev to staging ${{ steps.create_pr_name.outputs.PR_NAME }}"
           labels: "deploy"
 
       - name: Extract ticket numbers
