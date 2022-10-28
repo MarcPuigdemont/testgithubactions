@@ -21,27 +21,27 @@ jobs:
 
       - name: Delete existing branch
         run: |
-          git push origin --delete dev-to-staging
+          git push origin --delete dev-to-staging-${{ inputs.name }}
         continue-on-error: true
 
       - uses: peterjgrainger/action-create-branch@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'dev-to-staging'
+          branch: 'dev-to-staging-${{ inputs.name }}'
   
       - uses: everlytic/branch-merge@1.1.2
         with:
           github_token: ${{ github.token }}
           source_ref: 'dev'
-          target_branch: 'dev-to-staging'
+          target_branch: 'dev-to-staging-${{ inputs.name }}'
 
       - name: Create pull request
         id: pr
         uses: thomaseizinger/create-pull-request@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          head: dev-to-staging
+          head: dev-to-staging-${{ inputs.name }}
           base: staging
           title: "Dev to staging"
           labels: "deploy"
