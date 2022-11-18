@@ -1,0 +1,65 @@
+name: Create deployment pull request
+on:
+  workflow_dispatch:
+      # Inputs the workflow accepts.
+      inputs:
+        name:
+          # Friendly description to be shown in the UI instead of 'name'
+          description: 'Sprint name'
+          # Input has to be provided for the workflow to run
+          required: true
+jobs:
+  productionPromotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: staging
+
+      - name: Create Github Action Variables
+        id: create_variables
+        run: |
+          pr_name=${{ inputs.name }}
+          echo "PR_NAME=${pr_name^}" >> $GITHUB_OUTPUT
+          echo "ASANA_WORKSPACE=1196563353487540" >> $GITHUB_OUTPUT
+          echo "ASANA_TOKEN=1/1203392729127619:ca659373dd9e6950591d8e7e0a696ab2" >> $GITHUB_OUTPUT
+
+      - name: Delete existing branch
+        run: |
+          git push origin --delete dev-to-staging-${{ inputs.name }}
+        continue-on-error: true
+
+      - uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'dev-to-staging-${{ inputs.name }}'
+  
+      - uses: everlytic/branch-merge@1.1.2
+        with:
+          github_token: ${{ github.token }}
+          source_ref: 'dev'
+          target_branch: 'dev-to-staging-${{ inputs.name }}'
+
+      - name: Create pull request
+        id: pr
+        uses: thomaseizinger/create-pull-request@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          head: dev-to-staging-${{ inputs.name }}
+          base: staging
+          title: "Dev to staging ${{ steps.create_variables.outputs.PR_NAME }}"
+          labels: "deploy"
+
+      # return to dev to make sure Extract ticket numbers run correctly
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Extract ticket numbers
+        uses: ./.github/actions/extract-ticket-numbers
+        with:
+          github_token: ${{ github.token }}
+          pull_request: "${{ steps.pr.outputs.number }}"
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}

@@ -1,0 +1,27 @@
+name: Extract issue numbers
+
+author: steven.jeong
+
+description: Extract issue numbers from commit list
+
+inputs:
+  github_token:
+    description: Github Token that has access to `repo`
+    required: true
+  pull_request:
+    description: Number of the pull request
+    required: true
+  asana_token:
+    description: Token to request Asana API
+    required: true
+  asana_workspace:
+    description: Workspace to request tickets from
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'lib/index.js'
+
+branding:
+  icon: 'list'
+  color: 'white'
