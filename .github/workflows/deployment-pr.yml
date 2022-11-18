@@ -8,22 +8,21 @@ on:
           description: 'Sprint name'
           # Input has to be provided for the workflow to run
           required: true
-        asana_token:
-          description: 'Asana token'
-          required: true
 jobs:
   productionPromotion:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: dev
+          ref: staging
 
-      - name: Create PR Name
-        id: create_pr_name
+      - name: Create Github Action Variables
+        id: create_variables
         run: |
           pr_name=${{ inputs.name }}
           echo "PR_NAME=${pr_name^}" >> $GITHUB_OUTPUT
+          echo "ASANA_WORKSPACE=1196563353487540" >> $GITHUB_OUTPUT
+          echo "ASANA_TOKEN=1234" >> $GITHUB_OUTPUT
 
       - name: Delete existing branch
         run: |
@@ -49,12 +48,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           head: dev-to-staging-${{ inputs.name }}
           base: staging
-          title: "Dev to staging ${{ steps.create_pr_name.outputs.PR_NAME }}"
+          title: "Dev to staging ${{ steps.create_variables.outputs.PR_NAME }}"
           labels: "deploy"
+
+      # return to dev to make sure Extract ticket numbers run correctly
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
 
       - name: Extract ticket numbers
         uses: ./.github/actions/extract-ticket-numbers
         with:
           github_token: ${{ github.token }}
           pull_request: "${{ steps.pr.outputs.number }}"
-          asana_token: ${{ inputs.asana_token }}
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}
