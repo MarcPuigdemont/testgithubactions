@@ -14,6 +14,9 @@ inputs:
   asana_token:
     description: Token to request Asana API
     required: true
+  asana_workspace:
+    description: Workspace to request tickets from
+    required: true
 
 runs:
   using: 'node16'
