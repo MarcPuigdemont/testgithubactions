@@ -11126,6 +11126,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
         const githubToken = (0, core_1.getInput)('github_token', { required: true });
         const pr = (0, core_1.getInput)('pull_request', { required: true });
         const asanaToken = (0, core_1.getInput)('asana_token', { required: true });
+        const asanaWorkspace = (0, core_1.getInput)('asana_workspace', { required: true });
         const octokit = (0, github_1.getOctokit)(githubToken);
         const payload = {
             owner: github_1.context.repo.owner,
@@ -11146,7 +11147,7 @@ const ISSUE_NUMBER_REGEX = /\[[0-9]+\]/;
         }
         const uniqueIssueNumbers = [...new Set(issueNumbers.map((issueNumber) => issueNumber.slice(1, -1)))];
         const tickets = yield Promise.all(uniqueIssueNumbers.map((issueNumber) => {
-            return axios_1.default.get(`https://app.asana.com/api/1.0/workspaces/1196563353487540/tasks/search?text=${issueNumber}&opt_fields=name,permalink_url`, {
+            return axios_1.default.get(`https://app.asana.com/api/1.0/workspaces/${asanaWorkspace}/tasks/search?text=${issueNumber}&opt_fields=name,permalink_url`, {
                 headers: {
                     Authorization: `Bearer ${asanaToken}`,
                 }
