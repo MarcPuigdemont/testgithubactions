@@ -1,0 +1,30 @@
+name: Fill pull request body with ticket list
+on:
+  workflow_dispatch:
+      inputs:
+        prNumber:
+          description: Number of the PR
+          required: true
+
+jobs:
+  fillPR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Github Action Variables
+        id: create_variables
+        run: |
+          echo "ASANA_WORKSPACE=1196563353487540" >> $GITHUB_OUTPUT
+          echo "ASANA_TOKEN=1234" >> $GITHUB_OUTPUT
+
+      # return to dev to make sure Extract ticket numbers run correctly
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Extract ticket numbers
+        uses: ./.github/actions/extract-ticket-numbers
+        with:
+          github_token: ${{ github.token }}
+          pull_request: "${{ inputs.prNumber }}"
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}
