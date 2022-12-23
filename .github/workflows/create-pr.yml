@@ -1,0 +1,92 @@
+name: Create pull request from existing branch
+on:
+  workflow_dispatch:
+      # Inputs the workflow accepts.
+      inputs:
+        typeOfPR:
+          type: choice
+          description: Please specify which type of deploy/backport
+          options:
+            - Deploy dev to staging
+            - Deploy staging to dev
+            - Backport
+          required: true
+        sprintName:
+          description: Sprint name
+          required: true
+        branchName:
+          description: Name of the branch
+          required: true
+
+jobs:
+  createPR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Github Action Variables
+        id: create_variables
+        run: |
+          pr_name=${{ inputs.sprintName }}
+          echo "PR_NAME=${pr_name^}" >> $GITHUB_OUTPUT
+          echo "ASANA_WORKSPACE=1196563353487540" >> $GITHUB_OUTPUT
+          echo "ASANA_TOKEN=1234" >> $GITHUB_OUTPUT
+
+      - name: Create deploy dev to staging pull request
+        if: inputs.typeOfPR == 'Deploy dev to staging'
+        id: pr-dev-to-staging
+        uses: thomaseizinger/create-pull-request@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          head: ${{ inputs.branchName }}
+          base: staging
+          title: "Dev to staging ${{ steps.create_variables.outputs.PR_NAME }}"
+          labels: "deploy"
+      - name: Create deploy staging to prod pull request
+        if: inputs.typeOfPR == 'Deploy staging to prod'
+        id: pr-staging-to-prod
+        uses: thomaseizinger/create-pull-request@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          head: ${{ inputs.branchName }}
+          base: prod
+          title: "Staging to prod ${{ steps.create_variables.outputs.PR_NAME }}"
+          labels: "deploy"
+      - name: Create backport pull request
+        if: inputs.typeOfPR == 'Backport'
+        id: pr-backport
+        uses: thomaseizinger/create-pull-request@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          head: ${{ inputs.branchName }}
+          base: dev
+          title: "Staging to dev ${{ steps.create_pr_name.outputs.PR_NAME }}"
+          labels: "backport"
+
+      # return to dev to make sure Extract ticket numbers run correctly
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Extract ticket numbers
+        if: inputs.typeOfPR == 'Deploy dev to staging'
+        uses: ./.github/actions/extract-ticket-numbers
+        with:
+          github_token: ${{ github.token }}
+          pull_request: "${{ steps.pr-dev-to-staging.outputs.number }}"
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}
+      - name: Extract ticket numbers
+        if: inputs.typeOfPR == 'Deploy staging to prod'
+        uses: ./.github/actions/extract-ticket-numbers
+        with:
+          github_token: ${{ github.token }}
+          pull_request: "${{ steps.pr-staging-to-prod.outputs.number }}"
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}
+      - name: Extract ticket numbers
+        if: inputs.typeOfPR == 'Backport'
+        uses: ./.github/actions/extract-ticket-numbers
+        with:
+          github_token: ${{ github.token }}
+          pull_request: "${{ steps.pr-backport.outputs.number }}"
+          asana_token: ${{ steps.create_variables.outputs.ASANA_TOKEN }}
+          asana_workspace: ${{ steps.create_variables.outputs.ASANA_WORKSPACE }}
