@@ -1,4 +1,4 @@
-name: Echo when push on branch
+name: Echo when merge PR on prod
 on:
   pull_request:
     types:
