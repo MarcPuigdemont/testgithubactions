@@ -2,7 +2,7 @@ name: Echo when push on branch
 on:
   push:
     branches:
-      - 'prod'
+      - prod
 jobs:
   echo:
     runs-on: ubuntu-latest
