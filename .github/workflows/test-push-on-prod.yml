@@ -1,0 +1,12 @@
+name: Auto Create Release
+on:
+  push:
+    - 'prod'
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Echoes to know this worked
+        run: echo "It worked"
