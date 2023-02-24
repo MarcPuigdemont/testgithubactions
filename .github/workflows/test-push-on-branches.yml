@@ -1,6 +1,7 @@
-name: Auto Create Release
+name: Echo when push on a branch
 on:
   push:
+    - '**'
 jobs:
   echo:
     runs-on: ubuntu-latest
