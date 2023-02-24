@@ -1,0 +1,12 @@
+name: Echo when push on branch
+on:
+  push:
+    branches:
+      - 'prod'
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: |
+          echo "It runs on branch ${{ github.ref }}"
