@@ -36,6 +36,7 @@ jobs:
           echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
       - name: "Create release"
+      
         uses: "actions/github-script@v6"
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
