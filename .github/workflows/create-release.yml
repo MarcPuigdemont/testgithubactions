@@ -35,9 +35,6 @@ jobs:
           release_name="Release ${capitalized_tag_name//-/ } $date"
           echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
-      - name: "Determine tag"
-        run: "echo \"RELEASE_TAG=${GITHUB_REF#refs/tags/}\" >> $GITHUB_ENV"
-
       - name: "Create release"
         uses: "actions/github-script@v6"
         with:
@@ -51,7 +48,7 @@ jobs:
                 owner: context.repo.owner,
                 prerelease: false,
                 repo: context.repo.repo,
-                tag_name: process.env.RELEASE_TAG,
+                tag_name: "${{ inputs.tag }}",
               });
 
               core.exportVariable('RELEASE_ID', response.data.id);
