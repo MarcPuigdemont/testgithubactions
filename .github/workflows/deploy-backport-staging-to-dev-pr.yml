@@ -1,0 +1,38 @@
+name: "[Manual] Backport: Staging to dev pull request"
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Sprint name (lower case)'
+        # Input has to be provided for the workflow to run
+        required: true
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Create PR Name
+        id: create_pr_name
+        run: |
+          pr_name=${{ inputs.name }}
+          echo "PR_NAME=${pr_name^}" >> $GITHUB_OUTPUT
+
+      - name: Delete existing branch
+        run: git push origin --delete staging-to-dev-${{ inputs.name }}
+        continue-on-error: true
+
+      - name: Create branch
+        run: |
+          git checkout -b staging-to-dev-${{ inputs.name }}
+          git push -u origin staging-to-dev-${{ inputs.name }}
+  
+      - uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ github.token }}
+          source_ref: 'staging'
+          target_branch: 'staging-to-dev-${{ inputs.name }}'

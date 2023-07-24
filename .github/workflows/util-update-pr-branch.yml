@@ -1,0 +1,57 @@
+name: "[Manual] Util: Update branch of deploy/backport pull request"
+on:
+  workflow_dispatch:
+    inputs:
+      branchName:
+        description: Name of the branch to update
+        required: true
+
+jobs:
+  update-branch:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+        if: startsWith(inputs.branchName, 'staging-to-dev')
+        with:
+          ref: dev
+      - name: Reset PR source branch for backport
+        if: startsWith(inputs.branchName, 'staging-to-dev')
+        run: |
+          git checkout -b ${{ inputs.branchName }}
+          git push --force-with-lease -u origin ${{ inputs.branchName }}
+      - uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ github.token }}
+          source_ref: 'staging'
+          target_branch: '${{ inputs.branchName }}'
+
+      - uses: actions/checkout@v3
+        if: startsWith(inputs.branchName, 'dev-to-staging')
+        with:
+          ref: staging
+      - name: Reset PR source branch for deploying to staging
+        if: startsWith(inputs.branchName, 'dev-to-staging')
+        run: |
+          git checkout -b ${{ inputs.branchName }}
+          git push --force-with-lease -u origin ${{ inputs.branchName }}
+      - uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ github.token }}
+          source_ref: 'dev'
+          target_branch: '${{ inputs.branchName }}'
+
+      - uses: actions/checkout@v3
+        if: startsWith(inputs.branchName, 'staging-to-prod')
+        with:
+          ref: prod
+      - name: Reset PR source branch for deploying to prod
+        if: startsWith(inputs.branchName, 'staging-to-prod')
+        run: |
+          git checkout -b ${{ inputs.branchName }}
+          git push --force-with-lease -u origin ${{ inputs.branchName }}
+      - uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ github.token }}
+          source_ref: 'staging'
+          target_branch: '${{ inputs.branchName }}'
